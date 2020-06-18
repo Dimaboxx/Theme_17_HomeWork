@@ -1,0 +1,38 @@
+﻿<Window x:Class="Theme_17_HomeWork.w_newAccaunt"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Theme_17_HomeWork"
+        mc:Ignorable="d"
+        Title="w_newAccaunt" Height="210" Width="200" Closing="Window_Closing">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0" Margin="5">
+            <TextBlock Text="Тип счета"></TextBlock>
+            <ComboBox x:Name="cbbx_acctype"
+                      Margin="2" Padding="2"
+                      ItemsSource="{Binding}"
+                      DisplayMemberPath="Description"></ComboBox>
+            <TextBlock Text="Дата окончания Date:"></TextBlock>
+            <DatePicker x:Name="dp_enddate" 
+                        IsTodayHighlighted="True" 
+                        SelectedDateFormat="Long" 
+                        FirstDayOfWeek="Monday"
+                        Focusable="False"
+                        MouseEnter="dp_enddate_MouseEnter"  
+                        />
+            <TextBlock Text="Начисление процентов:"></TextBlock>
+            <ComboBox x:Name="cbbx_ratetype"
+                      Margin="2" Padding="2"
+                      ItemsSource="{Binding}"
+                      DisplayMemberPath="Description"></ComboBox>
+            <CheckBox x:Name="cbx_Capitalisation"
+                      Content="Капитализация"></CheckBox>
+            <Button x:Name="btn_openAcc" Content="открыть" Margin="0,5" Click="btn_openAcc_Click"></Button>
+            <Line></Line>
+        </StackPanel>
+    </Grid>
+</Window>

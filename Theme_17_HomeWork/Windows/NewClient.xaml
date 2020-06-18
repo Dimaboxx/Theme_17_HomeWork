@@ -1,0 +1,107 @@
+﻿<Window x:Class="Theme_17_HomeWork.NewClient"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:convert="clr-namespace:DreamConvertions"
+        mc:Ignorable="d"
+        Title="NewClient" Height="250" Width="350" Closing="Window_Closing">
+    <Grid Margin="10">
+        <Grid.Resources>
+            <convert:ConvertcbTextToHidden x:Key="Convert_cbTextToHidden"></convert:ConvertcbTextToHidden>
+            <convert:ConverSelectedItemsToBool x:Key="Convert_SelectedItemsToBool"></convert:ConverSelectedItemsToBool>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="Client Type"
+                   Grid.Row="0" Grid.Column="0" 
+                   Margin="2" Padding="2"
+                   />
+        <ComboBox x:Name="cbx_ClientType" 
+                  Grid.Row="0" Grid.Column="1"
+                  Margin="2" Padding="2"
+                  ItemsSource="{Binding}"
+                   DisplayMemberPath="Description"/>
+        <TextBlock Text="Organisation Name" 
+            Grid.Row="1" 
+            Grid.Column="0" 
+            HorizontalAlignment="Stretch" 
+                   Margin="2" Padding="2"
+            TextWrapping="Wrap" 
+            Visibility="{Binding ElementName=cbx_ClientType, Path=Text, Converter={StaticResource Convert_cbTextToHidden}, ConverterParameter=False}"/>
+        <TextBox x:Name="tbx_OrganistionName" 
+                 Grid.Row="1" Grid.Column="1" 
+                 HorizontalAlignment="Stretch" 
+                 TextWrapping="Wrap" 
+                 Text="" 
+                 VerticalAlignment="Stretch"
+                 Margin="2" Padding="2"
+                 Visibility="{Binding ElementName=cbx_ClientType, Path=Text, Converter={StaticResource Convert_cbTextToHidden}, ConverterParameter=False}" />
+        <TextBlock Text="First Name" 
+            Grid.Row="1" Grid.Column="0" 
+            Margin="2" Padding="2"       
+            HorizontalAlignment="Stretch" 
+            VerticalAlignment="Stretch"
+            TextWrapping="Wrap" 
+            Visibility="{Binding ElementName=cbx_ClientType, Path=Text, Converter={StaticResource Convert_cbTextToHidden}, ConverterParameter=True}"/>
+        <TextBox x:Name="tbx_FirstName" 
+                 Grid.Row="1" Grid.Column="1" 
+                 HorizontalAlignment="Stretch" 
+                 VerticalAlignment="Stretch" 
+                 Margin="2"
+                 Padding="2"
+                 TextWrapping="Wrap" 
+                 Text="" 
+                 Visibility="{Binding ElementName=cbx_ClientType, Path=Text, Converter={StaticResource Convert_cbTextToHidden}, ConverterParameter=True}" />
+        <TextBlock Text="Midle Name" 
+            Margin="2" Padding="2"       
+            Grid.Row="2" Grid.Column="0" 
+            HorizontalAlignment="Left" 
+            VerticalAlignment="Top" 
+            TextWrapping="Wrap" 
+            Visibility="{Binding ElementName=cbx_ClientType, Path=Text, Converter={StaticResource Convert_cbTextToHidden}, ConverterParameter=True}" />
+        <TextBox x:Name="tbx_MidleName" 
+                 Grid.Row="2" Grid.Column="1" 
+            Margin="2" Padding="2"       
+                 TextWrapping="Wrap" 
+                 Text="" 
+                 HorizontalAlignment="Stretch" 
+                 VerticalAlignment="Stretch" 
+                 Visibility="{Binding ElementName=cbx_ClientType, Path=Text, Converter={StaticResource Convert_cbTextToHidden}, ConverterParameter=True}"/>
+        <TextBlock Text="Last Name" 
+                   Margin="2" Padding="2"       
+                   Grid.Row="3" Grid.Column="0" 
+                   HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                   TextWrapping="Wrap" 
+                   Visibility="{Binding ElementName=cbx_ClientType, Path=Text, Converter={StaticResource Convert_cbTextToHidden}, ConverterParameter=True}"/>
+        <TextBox x:Name="tbx_LastName" 
+                   Margin="2" Padding="2"       
+                 Grid.Row="3" Grid.Column="1"
+                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                 TextWrapping="Wrap" Text=""
+                 Visibility="{Binding ElementName=cbx_ClientType, Path=Text, Converter={StaticResource Convert_cbTextToHidden}, ConverterParameter=True}"/>
+        <CheckBox x:Name="cb_GoodHistory" 
+                  Grid.Row="4" Grid.Column="1"
+                  Margin="5"  
+                  Content="Good History"></CheckBox>
+        <Button Content="Добавить" 
+                Grid.Row="5" Grid.Column="1"
+                Padding="2"
+                HorizontalAlignment="Stretch"  
+                VerticalAlignment="Bottom" 
+                IsEnabled="{Binding ElementName=cbx_ClientType, Path=SelectedItem, Converter= {StaticResource Convert_SelectedItemsToBool}}"
+                Click="Button_Click" 
+                />
+
+    </Grid>
+</Window>
