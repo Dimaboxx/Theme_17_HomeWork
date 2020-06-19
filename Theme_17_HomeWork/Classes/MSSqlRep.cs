@@ -74,7 +74,7 @@ namespace Theme_17_HomeWork
     c.id,
     c.FullName,
     ct.[description] as 'ClientType', 
-    ac.accs
+    isnull(ac.accs,0) as 'accs'
 from[dbo].[Clients] as c
     left join[dbo].[ClientType] as ct
 on c.ClientType = ct.id

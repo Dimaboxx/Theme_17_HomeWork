@@ -78,10 +78,9 @@ create table [dbo].[ratesType](
 select * from [dbo].ratesType
 
 
-insert into [dbo].[Clients] (FirstName,MidleName,LastName)  Values(N'fn','mn','ln');
+insert into [dbo].[Clients] (ClientType,FirstName,MidleName,LastName)  Values(0 ,N'fn','mn','ln');
 insert into [dbo].[Clients] (ClientType,OrganisationName)  Values(1,N'Orgn');
-insert into [dbo].[Clients] (ClientType)  Values(1);
---GO 15;
+GO 2
 
 alter table [dbo].Accaunts add constraint FK_Type_AccauntType_id foreign key (Type) references [dbo].AccauntType (id)
 
