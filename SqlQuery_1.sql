@@ -1,7 +1,8 @@
 ﻿use MSSQLLocalDemo
+-- (localdb)\MSSQLLocalDB
 --  SQL file for home work
-
-
+  drop database mssqllocaldemo
+create database MSSQLLocalDemo
 -- Create Client Table
 
 CREATE TABLE [dbo].[Clients] (
@@ -170,3 +171,28 @@ on c.ClientType = ct.id
     [Accaunts] as a 
     left join AccauntType as act on a.[Type] = act.id  
     left join ratesType as rt on a.[ratesTypeid] = rt.id  
+
+
+
+    create table test (
+    id int not null);
+
+
+    set @res = (select top(1) id as d  from test order by id desc)
+    set @res = isnull(@res,0)+1
+
+
+    set @res = [dbo].NextId
+    select @res
+    
+    declare @res int;
+    exec @res = dbo.NextId
+    insert into test(id) Values(@res);
+
+    select *  from test order by id desc
+
+
+
+
+
+

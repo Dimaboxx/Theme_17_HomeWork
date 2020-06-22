@@ -23,7 +23,7 @@ namespace Theme_17_HomeWork
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindowBak : Window
     {
         public static string DateTimeformat;
         public static string Timeformat;
@@ -32,14 +32,14 @@ namespace Theme_17_HomeWork
         public static w_newAccaunt wnd_w_newAccaunt;
         public MSSqlRep mSSqlRep;
 
-        static MainWindow() {
+        static MainWindowBak() {
             Timeformat = System.Threading.Thread.CurrentThread.CurrentUICulture.DateTimeFormat.LongTimePattern;
             Dateformat = System.Threading.Thread.CurrentThread.CurrentUICulture.DateTimeFormat.ShortDatePattern;
             DateTimeformat = $"{Dateformat} {Timeformat}";
         }
 
 
-        public MainWindow()
+        public MainWindowBak()
         {
            LogCenter logCenter = new LogCenter();
             this.Language = System.Windows.Markup.XmlLanguage.GetLanguage(System.Threading.Thread.CurrentThread.CurrentUICulture.IetfLanguageTag);
@@ -51,8 +51,8 @@ namespace Theme_17_HomeWork
             lst_log.ItemsSource = logCenter.records;
             
             logCenter.AddMessage("Репозитарий создан");
-//            cbx_ClientType.DataContext = mSSqlRep.DtClientsTypes.DefaultView;
-//            dtg_Clients.DataContext = mSSqlRep.dt_clients.DefaultView;
+            cbx_ClientType.DataContext = mSSqlRep.DtClientsTypes.DefaultView;
+            dtg_Clients.DataContext = mSSqlRep.dt_clients.DefaultView;
             dtg_Accaunts.DataContext = mSSqlRep.dt_Accaunts.DefaultView;
 
 
@@ -70,16 +70,11 @@ namespace Theme_17_HomeWork
         private void Btn_addClient_Click(object sender, RoutedEventArgs e)
         {
             if (wnd_newClient == null)
-            {
+            { 
                 wnd_newClient = new NewClient();
-        
-                //wnd_newClient.accTypes = mSSqlRep.DtClientsTypes;
+                wnd_newClient.accTypes = mSSqlRep.DtClientsTypes;
                 wnd_newClient.newClientEvent += mSSqlRep.AddClient;
-                wnd_newClient.newOrganisationEvent += mSSqlRep.AddOrganisation;
-
-                wnd_newClient.dt_Clients = mSSqlRep.dt_clients;
                 wnd_newClient.Owner = this;
-
             }
             wnd_newClient.ShowDialog();
             //if (wnd_newClient.DialogResult == true)
@@ -99,32 +94,29 @@ namespace Theme_17_HomeWork
            // wnd_w_newAccaunt.OwnerId = (int)((DataRowView)(dtg_Clients.SelectedItem))["id"];
             wnd_w_newAccaunt.AccType = mSSqlRep.DtAccauntTypes;
             wnd_w_newAccaunt.RateType = mSSqlRep.DtRateTypes;
-            wnd_w_newAccaunt.Clients = mSSqlRep.dt_clients;
-
             DataRow row = mSSqlRep.dt_Accaunts.NewRow();
-            //var id =dtg_Clients.SelectedIndex;
-            //row["OwnerId"] = (int)((DataRowView)(dtg_Clients.SelectedItem))["id"];
+            var id =dtg_Clients.SelectedIndex;
+            row["OwnerId"] = (int)((DataRowView)(dtg_Clients.SelectedItem))["id"];
             wnd_w_newAccaunt.NewACCrow = row;
 
             wnd_w_newAccaunt.ShowDialog();
             if(wnd_w_newAccaunt.DialogResult == true)
             {
                 mSSqlRep.AddAccaunt(row);
-                //dtg_Clients.SelectedIndex = id;
+                dtg_Clients.SelectedIndex = id;
             }
-            wnd_w_newAccaunt = null;
         }
 
 
 
 
-        //private void cbx_CliTypeCnhg(object sender, SelectionChangedEventArgs e)
-        //{
-        //    if(cbx_ClientType.SelectedItem != null) 
-        //        mSSqlRep.dt_clients.DefaultView.RowFilter = ($"ClientType = '{((DataRowView)(cbx_ClientType.SelectedItem))["Description"]}'");
-        //    else
-        //        mSSqlRep.dt_clients.DefaultView.RowFilter = ("");
-        //}
+        private void cbx_CliTypeCnhg(object sender, SelectionChangedEventArgs e)
+        {
+            if(cbx_ClientType.SelectedItem != null) 
+                mSSqlRep.dt_clients.DefaultView.RowFilter = ($"ClientType = '{((DataRowView)(cbx_ClientType.SelectedItem))["Description"]}'");
+            else
+                mSSqlRep.dt_clients.DefaultView.RowFilter = ("");
+        }
 
 
 
@@ -146,25 +138,25 @@ namespace Theme_17_HomeWork
 
 
 
-       // private void Btn_dellClient_Click(object sender, RoutedEventArgs e)
-       // {
-       //     if(dtg_Clients.SelectedItem!=null)
-       //          mSSqlRep.DeleteClient((DataRowView)(dtg_Clients.SelectedItem));
-       //}
+        private void Btn_dellClient_Click(object sender, RoutedEventArgs e)
+        {
+            if(dtg_Clients.SelectedItem!=null)
+                 mSSqlRep.DeleteClient((DataRowView)(dtg_Clients.SelectedItem));
+       }
 
-        //private void dtg_Clients_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        //{
-        //    if (dtg_Clients.SelectedItem != null)
-        //        mSSqlRep.dt_Accaunts.DefaultView.RowFilter = ($"OwnerId= '{((DataRowView)(dtg_Clients.SelectedItem))["id"]}'");
-        //    else
-        //        mSSqlRep.dt_Accaunts.DefaultView.RowFilter = ($"OwnerId= '0'");
-        //        //mSSqlRep.dt_Accaunts.DefaultView.RowFilter = "";
-        //}
+        private void dtg_Clients_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (dtg_Clients.SelectedItem != null)
+                mSSqlRep.dt_Accaunts.DefaultView.RowFilter = ($"OwnerId= '{((DataRowView)(dtg_Clients.SelectedItem))["id"]}'");
+            else
+                mSSqlRep.dt_Accaunts.DefaultView.RowFilter = ($"OwnerId= '0'");
+                //mSSqlRep.dt_Accaunts.DefaultView.RowFilter = "";
+        }
 
-        //private void MenuItem_Click(object sender, RoutedEventArgs e)
-        //{
-        //    cbx_ClientType.SelectedIndex = -1;
-        //}
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            cbx_ClientType.SelectedIndex = -1;
+        }
 
         private void Btn_CloseAcc_Click(object sender, RoutedEventArgs e)
         {

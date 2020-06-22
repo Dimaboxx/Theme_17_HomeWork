@@ -4,13 +4,23 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Theme_17_HomeWork"
+        xmlns:convert="clr-namespace:DreamConvertions"
         mc:Ignorable="d"
-        Title="w_newAccaunt" Height="210" Width="200" Closing="Window_Closing">
+        Title="w_newAccaunt" Height="300" Width="200" >
+    <Window.Resources>
+        <convert:ConverSelectedItemsToBool x:Key="ItemToBool"></convert:ConverSelectedItemsToBool>
+
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="0" Margin="5">
+            <TextBlock Text="Клиент"></TextBlock>
+            <ComboBox x:Name="cbbx_Owner"
+                      Margin="2" Padding="2"
+                      ItemsSource="{Binding}"
+                      DisplayMemberPath="FullName"></ComboBox>
             <TextBlock Text="Тип счета"></TextBlock>
             <ComboBox x:Name="cbbx_acctype"
                       Margin="2" Padding="2"
@@ -31,7 +41,11 @@
                       DisplayMemberPath="Description"></ComboBox>
             <CheckBox x:Name="cbx_Capitalisation"
                       Content="Капитализация"></CheckBox>
-            <Button x:Name="btn_openAcc" Content="открыть" Margin="0,5" Click="btn_openAcc_Click"></Button>
+            <Button x:Name="btn_openAcc" Content="открыть" 
+                    Margin="0,5" 
+                    Click="btn_openAcc_Click"
+                    IsEnabled="{Binding ElementName=cbbx_Owner, Path=SelectedItem, Converter={StaticResource ItemToBool}}"
+                    ></Button>
             <Line></Line>
         </StackPanel>
     </Grid>

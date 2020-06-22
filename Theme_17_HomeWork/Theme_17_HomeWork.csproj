@@ -56,16 +56,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Classes\Support.cs" />
     <Compile Include="Classes\Converters.cs" />
     <Compile Include="Classes\MSSqlRep.cs" />
     <Compile Include="Windows\w_newAccaunt.xaml.cs">
       <DependentUpon>w_newAccaunt.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\w_PersentView.xaml.cs">
-      <DependentUpon>w_PersentView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\w_SelectTargetAccaunt.xaml.cs">
-      <DependentUpon>w_SelectTargetAccaunt.xaml</DependentUpon>
     </Compile>
     <Content Include="ДЗ.txt" />
     <Compile Include="Windows\NewClient.xaml.cs">
@@ -88,14 +83,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\w_newAccaunt.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\w_PersentView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\w_SelectTargetAccaunt.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -127,14 +114,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Bank\Bank.csproj">
-      <Project>{8577ad22-5e91-40a8-917f-45e5ab36e4bd}</Project>
-      <Name>Bank</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Ext\Ext.csproj">
-      <Project>{aaae8d97-81d3-4bc1-bb51-07aa07693c69}</Project>
-      <Name>Ext</Name>
-    </ProjectReference>
     <ProjectReference Include="..\LogLib\LogLib.csproj">
       <Project>{a63d52e6-9490-4030-b3a1-dc5dc3f47a6e}</Project>
       <Name>LogLib</Name>

@@ -12,7 +12,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using BankNameSpase;
 using LogCenterNameSpace;
 
 namespace Theme_17_HomeWork
@@ -22,17 +21,17 @@ namespace Theme_17_HomeWork
     /// </summary>
     public partial class w_newAccaunt : Window
     {
-      //  public int OwnerId { get; set; }
+        //  public int OwnerId { get; set; }
         public DataTable AccType
         {
-            get 
+            get
             {
-                return null; 
+                return null;
             }
-            set 
+            set
             {
-                cbbx_acctype.DataContext = value;     
-                    
+                cbbx_acctype.DataContext = value;
+
             }
         }
         public DataTable RateType
@@ -47,6 +46,18 @@ namespace Theme_17_HomeWork
 
             }
         }
+        public DataTable Clients
+        {
+            get
+            {
+                return null;
+            }
+            set
+            {
+                cbbx_Owner.DataContext = value;
+
+            }
+        }
 
 
         public DataRow NewACCrow { get; set; }
@@ -55,7 +66,7 @@ namespace Theme_17_HomeWork
         {
             InitializeComponent();
 
-             dp_enddate.BlackoutDates.AddDatesInPast();
+            dp_enddate.BlackoutDates.AddDatesInPast();
             dp_enddate.SelectedDate = DateTime.Now.AddMonths(12);
         }
         //public w_newAccaunt(DataRow row) : this()
@@ -67,14 +78,30 @@ namespace Theme_17_HomeWork
 
         private void btn_openAcc_Click(object sender, RoutedEventArgs e)
         {
+            if (cbbx_acctype.SelectedItem == null)
+            {
+                MessageBox.Show("Требуется выбрать тип счета");
+            }
+            else
+            {
+                if (cbbx_ratetype.SelectedItem == null)
+                {
+                    MessageBox.Show("Требуется выбрать тип начисления процентов");
 
-            NewACCrow["Type"] = (int)((DataRowView)cbbx_acctype.SelectedItem)["id"];
-            NewACCrow["OpenDate"] = DateTime.Now;
-            NewACCrow["EndDate"] = (DateTime)dp_enddate.SelectedDate;
-            NewACCrow["rates"] = 6;
-            NewACCrow["ratesTypeid"] = (int)((DataRowView)cbbx_ratetype.SelectedItem)["id"];
-            NewACCrow["Capitalisation"] = (bool)cbx_Capitalisation.IsChecked;
-                this.DialogResult = !false;
+                }
+                else
+                {
+                    NewACCrow["OwnerId"] = (int)((DataRowView)cbbx_Owner.SelectedItem)["id"];
+                    NewACCrow["TypeId"] = (int)((DataRowView)cbbx_acctype.SelectedItem)["id"];
+                    NewACCrow["OpenDate"] = DateTime.Now;
+                    NewACCrow["EndDate"] = (DateTime)dp_enddate.SelectedDate;
+                    NewACCrow["Rates"] = 6;
+                    NewACCrow["RatesTypeid"] = (int)((DataRowView)cbbx_ratetype.SelectedItem)["id"];
+                    NewACCrow["Capitalisation"] = (bool)cbx_Capitalisation.IsChecked;
+                    this.DialogResult = !false;
+                    this.Close();
+                }
+            }
 
 
 
@@ -123,9 +150,6 @@ namespace Theme_17_HomeWork
             dp_enddate.IsDropDownOpen = true;
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-       {
-            //MainWindow.wnd_w_newAccaunt = null;
-        } 
+
     }
 }

@@ -73,9 +73,16 @@ namespace Theme_17_HomeWork
             string sql = @"select
     c.id,
     c.FullName,
-    ct.[description] as 'ClientType', 
+    ct.[description] as 'ClientType',
+    c.GoodHistory,
     isnull(ac.accs,0) as 'accs'
-from[dbo].[Clients] as c
+from (select 
+        id,FullName as N'FullName',ClientType,GoodHistory
+    from [Clients] 
+    union 
+    select 
+        id, OrganisationName as'FullName',ClientType,GoodHistory
+    from Organisations) as c
     left join[dbo].[ClientType] as ct
 on c.ClientType = ct.id
     left join(select OwnerId, cast (count(*) as int) as 'accs' from[dbo].Accaunts group by OwnerId ) as ac
@@ -102,28 +109,39 @@ on c.ClientType = ct.id
 @"    select
        a.id,
        act.Description as 'TypeDesc',
+       rt.Description as 'RatesType',
+       c.FullName as 'Owner',
        a.Balans,
        a.OpenDate,
        a.EndDate,
        a.rates,
-       rt.Description as 'RatesType',
        a.OwnerId,
        a.ratesTypeid,
        a.Capitalisation,
-       a.[Type]
+       a.TypeId,
+       c.ClientType      
         
     from
     [Accaunts] as a 
-    left join AccauntType as act on a.[Type] = act.id  
-    left join ratesType as rt on a.[ratesTypeid] = rt.id ";
+    left join AccauntType as act on a.[TypeId] = act.id  
+    left join ratesType as rt on a.[ratesTypeid] = rt.id
+    left join (select 
+        id,FullName as 'FullName',ClientType
+    from [Clients] 
+    union 
+    select 
+        id, OrganisationName as'FullName',ClientType
+    from Organisations) as c on a.OwnerId = c.id";
 
             da_accaunts.SelectCommand = new SqlCommand(sql_select_accs, con);
             #endregion
 
             #region insertAccaunt
 
-            sql = @"INSERT INTO [Accaunts]  ( OwnerId, Type, OpenDate, EndDate, rates, ratesTypeid) 
-                                 VALUES ( @OwnerId, @Type, @OpenDate,  @EndDate, @rates, @ratesTypeid); 
+            sql = @"declare @res int; 
+                 exec @res = dbo.NextAccauntId; 
+                INSERT INTO [Accaunts]  ( id, OwnerId, TypeId, OpenDate, EndDate, rates, ratesTypeid) 
+                                 VALUES (@res, @OwnerId, @TypeId, @OpenDate,  @EndDate, @rates, @ratesTypeid); 
                  SET @id = @@IDENTITY;
                      ";
             //sql = @"INSERT INTO [Accaunts] (OwnerId, Type, OpenDate, EndDate, rates, ratesTypeid) 
@@ -134,7 +152,7 @@ on c.ClientType = ct.id
 
             da_accaunts.InsertCommand.Parameters.Add("@id", SqlDbType.Int, 4, "id").Direction = ParameterDirection.Output;
             da_accaunts.InsertCommand.Parameters.Add("@OwnerId", SqlDbType.Int, 4, "OwnerId");
-            da_accaunts.InsertCommand.Parameters.Add("@Type", SqlDbType.Int, 4, "Type");
+            da_accaunts.InsertCommand.Parameters.Add("@TypeId", SqlDbType.Int, 4, "TypeId");
             da_accaunts.InsertCommand.Parameters.Add("@OpenDate", SqlDbType.Date, 3, "OpenDate");
             da_accaunts.InsertCommand.Parameters.Add("@EndDate", SqlDbType.Date, 3, "EndDate");
             da_accaunts.InsertCommand.Parameters.Add("@rates", SqlDbType.Real, 4, "rates");
@@ -154,7 +172,7 @@ on c.ClientType = ct.id
 
 
             da_accaunts.Fill(dt_Accaunts);
-            dt_Accaunts.DefaultView.RowFilter = "OwnerId = -1";
+            //dt_Accaunts.DefaultView.RowFilter = "OwnerId = -1";
 
         }
 
@@ -193,39 +211,39 @@ on c.ClientType = ct.id
         }
 
 
-        public void AddClient(string FirstName, string MidleName, string LastName, string OrganisationName, int ClientType, bool GoodHistory)
+        public void AddClient(string FirstName, string MidleName, string LastName,  bool GoodHistory)
         {
 
             SqlCommand sqlCommand = new SqlCommand(
+                    $"declare @res int;"+
+                    "exec @res = dbo.NextClientId;" +
+                    $"" +
                     $"insert into [dbo].[Clients] " +
-                   $"(FirstName" +
+                   $"(id" +
+                   $",FirstName" +
                    $",MidleName," +
                    $"LastName," +
-                   $"OrganisationName," +
                    $"ClientType," +
                    $"GoodHistory)  " +
                    $"Values(" +
+                   $"@res," +
                    $"N'{FirstName}'," +
                    $"N'{MidleName}'," +
                    $"N'{LastName}'," +
-                   $"N'{OrganisationName}'," +
-                   $"{ClientType}," +
+                   $"0," +
                    $"'{ GoodHistory}')", con);
             con.Open();
             if (sqlCommand.ExecuteNonQuery() > 0)
             {
                 dt_clients.Clear();
                 da_clients.Fill(dt_clients);
-                newLogMessage?.Invoke($"Добавлен пользоваетль FirstName : " +
+                newLogMessage?.Invoke($"Добавлен пользоваетль клиент : " +
                    $"{FirstName}," +
                    $",MidleName : " +
                    $"N'{MidleName}'," +
                    $"LastName : " +
                    $"N'{LastName}'," +
-                   $"OrganisationName :" +
-                   $"N'{OrganisationName}'," +
-                   $",ClientType :" +
-                   $"{ClientType}," +
+
                    $"GoodHistory :  " +
                    $"'{ GoodHistory}')");
             }
@@ -233,22 +251,53 @@ on c.ClientType = ct.id
 
         }
 
+        public void AddOrganisation( string OrganisationName,  bool GoodHistory)
+        {
 
+            SqlCommand sqlCommand = new SqlCommand(
+                    $"declare @res int;" +
+                    "exec @res = dbo.NextClientId;" +
+                    $"" +
+                    $"insert into [dbo].[Organisations]( " +
+                    $"id," +
+                   $"OrganisationName," +
+                   $"ClientType," +
+                   $"GoodHistory)  " +
+                   $"Values(" +
+                   $"@res," +
+                   $"N'{OrganisationName}'," +
+                   $"1," +
+                   $"'{ GoodHistory}')", con);
+            con.Open();
+            if (sqlCommand.ExecuteNonQuery() > 0)
+            {
+                dt_clients.Clear();
+                da_clients.Fill(dt_clients);
+                newLogMessage?.Invoke($"Добавлена Организация : " +
+                   $"{OrganisationName}," +
+
+                   $"GoodHistory :  " +
+                   $"'{ GoodHistory}')");
+            }
+            con.Close();
+
+        }
         public void AddAccaunt(DataRow row)
         {
             dt_Accaunts.Rows.Add(row);
             newLogMessage?.Invoke(
-                $"Добавлен счет : " + $"{row["id"]}," +
+                $"Добавлен счет : " + $"{row["id"]}" +
 
+                   $",Type : " + $"'{row["TypeId"]}'" +
                    $",Ownerid : " + $"'{row["OwnerId"]}'" +
                    $",OpenDate : " + $"'{row["OpenDate"]}'" +
                    $",EndDate : " + $"'{row["EndDate"]}'" +
-                   $",Type : " + $"'{row["Type"]}'" +
                    $",rates : " + $"'{row["rates"]}'" +
+                   $",RateTypeId : " + $"'{row["RatesTypeid"]}'" +
                    $",Capitalisation : " + $"'{row["Capitalisation"]}'" +
                    $"");
             da_accaunts.Update(dt_Accaunts);
-            ReFilldtClients();
+            ReFilldtAcc();
         }
 
 

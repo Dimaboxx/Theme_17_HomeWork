@@ -1,4 +1,4 @@
-﻿<Window x:Class="Theme_17_HomeWork.MainWindow"
+﻿<Window x:Class="Theme_17_HomeWork.MainWindowBak"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -10,20 +10,22 @@
     <Grid>
         <Grid.Resources>
             <convert:ConverSelectedItemsToBool x:Key="ItemToBool"></convert:ConverSelectedItemsToBool>
-                <!--DataTemplate for Published Date column defined in Grid.Resources.  PublishDate is a property on the ItemsSource of type DateTime 
-                <DataTemplate x:Key="DateTemplate_openDate" >
+                <!--DataTemplate for Published Date column defined in Grid.Resources.  PublishDate is a property on the ItemsSource of type DateTime -->
+                <!--<DataTemplate x:Key="DateTemplate_openDate" >
                     <TextBlock Text="{Binding OpenDate, StringFormat={x:Static local:MainWindow.Dateformat}}"  />
                 </DataTemplate>
             <DataTemplate x:Key="DateTemplate_EndDate" >
                 <TextBlock Text="{Binding EndDate, StringFormat={x:Static local:MainWindow.Dateformat}}"  />
-            </DataTemplate>
-            DataTemplate for the Published Date column when in edit mode. 
-                <DataTemplate x:Key="EditingDateTemplate">
+            </DataTemplate>-->
+            <!--DataTemplate for the Published Date column when in edit mode. -->
+                <!--<DataTemplate x:Key="EditingDateTemplate">
                     <DatePicker SelectedDate="{Binding PublishDate}"  />
                 </DataTemplate>-->
 
         </Grid.Resources>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50*"></ColumnDefinition>
+            <ColumnDefinition Width="3"></ColumnDefinition>
             <ColumnDefinition Width="50*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -32,10 +34,76 @@
             <RowDefinition Height="20*"></RowDefinition>
         </Grid.RowDefinitions>
 
+        <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" HorizontalAlignment="Stretch"/>
+        <DataGrid x:Name="dtg_Clients"            
+                      Grid.Row="1" Grid.Column="0"
+                        AutoGenerateColumns="False"
+                    ItemsSource="{Binding}"
+                  VerticalGridLinesBrush="LightGray"
+                  HorizontalGridLinesBrush="LightGray"
+                  RowBackground="GhostWhite"
+                  AlternatingRowBackground="Snow"
+                  SelectionChanged="dtg_Clients_SelectionChanged"
+                  IsReadOnly="True"
+                  >
+            <DataGrid.Columns>
+
+                <DataGridTextColumn     Header="id"
+                                        Binding="{Binding id}"
+                                        IsReadOnly="True"
+                                        x:Name="Id"/>
+                <DataGridTextColumn Header="FullName"
+                                    x:Name="FullName"
+                                    IsReadOnly="True"
+                                    Binding="{Binding FullName}" />
+                <DataGridTextColumn Header="ClientType"
+                                    IsReadOnly="True"
+                                    Binding="{Binding ClientType}" 
+                                    x:Name="History"/>
+                <DataGridTextColumn Header="History"
+                                    IsReadOnly="True"
+                                    Binding="{Binding GoodHistory}" />
+                <DataGridTextColumn Header="accs"
+                                    IsReadOnly="True"
+                                    Binding="{Binding accs}" />
+            </DataGrid.Columns>
+        </DataGrid>
         <WrapPanel 
             Grid.Row="0" Grid.Column="0"
                 >
-            
+            <ComboBox x:Name="cbx_ClientType" 
+                          Margin="5" MinWidth="150" 
+                          SelectionChanged="cbx_CliTypeCnhg"
+                      ItemsSource="{Binding}"
+                      DisplayMemberPath="Description"
+                      
+                          >
+                <ComboBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Сбросить фильтр" Click="MenuItem_Click"/>
+                    </ContextMenu>
+                </ComboBox.ContextMenu>
+                <!--<ComboBoxItem Content="All" IsSelected="True"></ComboBoxItem>
+                <ComboBoxItem Content="Standart"></ComboBoxItem>
+                <ComboBoxItem Content="VIP"></ComboBoxItem>
+                <ComboBoxItem Content="Organisations"></ComboBoxItem>-->
+            </ComboBox>
+            <Button Content="Добавить клиента" 
+                    Width="150"     Margin="5" 
+                    Click="Btn_addClient_Click"
+                    />
+            <Button Content="Добавить счет" x:Name="btn_addAcc"
+                        Width="150" Margin="5"
+                        IsEnabled="{Binding ElementName=dtg_Clients, Path=SelectedItem, Converter={StaticResource ItemToBool}}" 
+                        Click="Btn_addacc_Click"
+                    ToolTip="Активно при выбранном клиенте"
+                        />
+            <Button Content="Удалить клиента" 
+                Width="150"     Margin="5" 
+                        IsEnabled="{Binding ElementName=dtg_Clients, Path=SelectedItem, Converter={StaticResource ItemToBool}}" 
+                    ToolTip="Активно при выбранном клиенте"
+                Click="Btn_dellClient_Click"
+                    />
         </WrapPanel>
         <WrapPanel
             Grid.Row="0" Grid.Column="2"
@@ -68,15 +136,8 @@
                     ToolTip="Активно при выбраном счете"
                     Click="Btn_CloseAcc_Click"
                     />
-            <Button Content="Добавить клиента" 
-                    Width="150"     Margin="5" 
-                    Click="Btn_addClient_Click"
-                    />
-            <Button Content="Добавить счет" 
-                    Width="150"     Margin="5" 
-                    Click="Btn_addacc_Click"
-                    />
 
+                
 
         </WrapPanel>
         <DataGrid x:Name="dtg_Accaunts"
@@ -87,8 +148,7 @@
                   >
             <DataGrid.Columns>
                 <DataGridTextColumn Header="id" Binding="{Binding id}"></DataGridTextColumn>
-                <DataGridTextColumn Header="Owner" Binding="{Binding Owner}"></DataGridTextColumn>
-                <DataGridTextColumn Header="Type" Binding="{Binding TypeDesc}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Type" Binding="{Binding Type}"></DataGridTextColumn>
                 <DataGridTextColumn Header="Balans" Binding="{Binding Balans, StringFormat={}{0:C}}"></DataGridTextColumn>
                 <!--<DataGridTemplateColumn Header="OpenDate" CellTemplate="{StaticResource DateTemplate_openDate}"></DataGridTemplateColumn>
                 <DataGridTemplateColumn Header="EndDate" CellTemplate="{StaticResource DateTemplate_EndDate}"></DataGridTemplateColumn>-->
@@ -96,7 +156,6 @@
                 <DataGridTextColumn Header="EndDate" Binding="{Binding EndDate, StringFormat={}{0:d}}"></DataGridTextColumn>
                 <DataGridTextColumn Header="rates" Binding="{Binding rates,StringFormat={}{0:F1}}"></DataGridTextColumn>
                 <DataGridTextColumn Header="RatesType" Binding="{Binding RatesType}"></DataGridTextColumn>
-                <DataGridCheckBoxColumn Header="Capitalisation" Binding="{Binding Capitalisation}"></DataGridCheckBoxColumn>
             </DataGrid.Columns>
 
         </DataGrid>
