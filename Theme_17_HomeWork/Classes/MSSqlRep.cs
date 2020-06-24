@@ -15,9 +15,11 @@ namespace Theme_17_HomeWork
         public event Action<string> newLogMessage;
         public SqlConnection con;
         SqlDataAdapter da_clients;
+        SqlDataAdapter da_organisations;
         SqlDataAdapter da_accaunts;
         public DataTable dt_clients;
         public DataTable dt_Accaunts;
+        public DataTable dt_Organisations;
         // DataRowView row;
         public DataTable DtClientsTypes { get { return dtClientsTypes; } }
         private DataTable dtClientsTypes;
@@ -42,12 +44,15 @@ namespace Theme_17_HomeWork
 
             dt_clients = new DataTable();
             dt_Accaunts = new DataTable();
+            dt_Organisations = new DataTable();
+
             dtClientsTypes = new DataTable();
             dtAccauntTypes = new DataTable();
             dtRateTypes = new DataTable();
 
             da_clients = new SqlDataAdapter();
             da_accaunts = new SqlDataAdapter();
+            da_organisations = new SqlDataAdapter();
 
 
             #region gettypes
@@ -79,10 +84,11 @@ namespace Theme_17_HomeWork
 from (select 
         id,FullName as N'FullName',ClientType,GoodHistory
     from [Clients] 
-    union 
-    select 
-        id, OrganisationName as'FullName',ClientType,GoodHistory
-    from Organisations) as c
+--    union 
+--    select 
+--        id, OrganisationName as'FullName',ClientType,GoodHistory
+--    from Organisations
+) as c
     left join[dbo].[ClientType] as ct
 on c.ClientType = ct.id
     left join(select OwnerId, cast (count(*) as int) as 'accs' from[dbo].Accaunts group by OwnerId ) as ac
@@ -94,13 +100,50 @@ on c.ClientType = ct.id
             #endregion
             #region delete Clients
 
-            sql = "DELETE FROM [dbo].[Clients] WHERE id = @id";
+            string sql_client_dell = "DELETE FROM [dbo].[Clients] WHERE id = @id";
 
-            da_clients.DeleteCommand = new SqlCommand(sql, con);
+            da_clients.DeleteCommand = new SqlCommand(sql_client_dell, con);
             da_clients.DeleteCommand.Parameters.Add("@id", SqlDbType.Int, 4, "id");
 
             #endregion
             da_clients.Fill(dt_clients);
+
+            #region selectOrgs
+            string sql_selectOrgs = @"select
+    c.id,
+    c.FullName,
+    ct.[description] as 'ClientType',
+    c.GoodHistory,
+    isnull(ac.accs,0) as 'accs',
+    c.BankDetails,
+    c.Adress
+from (
+--select 
+--        id,FullName as N'FullName',ClientType,GoodHistory
+--    from [Clients] 
+--    union 
+    select 
+        id, OrganisationName as'FullName',ClientType,GoodHistory,BankDetails,Adress
+    from Organisations
+) as c
+    left join[dbo].[ClientType] as ct
+on c.ClientType = ct.id
+    left join(select OwnerId, cast (count(*) as int) as 'accs' from[dbo].Accaunts group by OwnerId ) as ac
+    on c.id = ac.OwnerId
+    order by c.id;
+";
+            da_organisations.SelectCommand = new SqlCommand(sql_selectOrgs, con);
+
+            #endregion
+            #region delete Orgs
+
+            sql = "DELETE FROM [dbo].[Organisations] WHERE id = @id";
+
+            da_organisations.DeleteCommand = new SqlCommand(sql, con);
+            da_organisations.DeleteCommand.Parameters.Add("@id", SqlDbType.Int, 4, "id");
+
+            #endregion
+            da_organisations.Fill(dt_Organisations);
 
 
 
@@ -163,9 +206,9 @@ on c.ClientType = ct.id
 
             #region delete Accs
 
-            sql = "DELETE FROM [dbo].[Accaunts] WHERE id = @id";
+            string sql_acc_dell = "DELETE FROM [dbo].[Accaunts] WHERE id = @id";
 
-            da_accaunts.DeleteCommand = new SqlCommand(sql, con);
+            da_accaunts.DeleteCommand = new SqlCommand(sql_acc_dell, con);
             da_accaunts.DeleteCommand.Parameters.Add("@id", SqlDbType.Int, 4, "id");
 
             #endregion
@@ -199,10 +242,31 @@ on c.ClientType = ct.id
                 da_clients.Update(dt_clients);
             }
         }
+        public void DeleteOrgs(DataRowView row)
+        {
+            if ((int)row["accs"] > 0)
+            {
+                MessageBox.Show("Нельзя удалять клиента при наличии открытых счетов");
+                newLogMessage?.Invoke($"Уданение клиента id: {row["id"]} невозможно , так как имеются счета : {row["accs"]}");
+
+            }
+            else
+            {
+                newLogMessage?.Invoke($"Уданение клиента id: {row["id"]} , Type : {row["ClientType"]} , {row["FullName"]}");
+                row.Row.Delete();
+                da_organisations.Update(dt_Organisations);
+            }
+        }
+
         public void ReFilldtClients()
         {
             dt_clients.Clear();
             da_clients.Fill(dt_clients);
+        }
+        public void ReFilldtOrgs()
+        {
+            dt_Organisations.Clear();
+            da_organisations.Fill(dt_Organisations);
         }
         public void ReFilldtAcc()
         {
@@ -211,7 +275,7 @@ on c.ClientType = ct.id
         }
 
 
-        public void AddClient(string FirstName, string MidleName, string LastName,  bool GoodHistory)
+        public void AddClient(string FirstName, string MidleName, string LastName, string Documents,  bool GoodHistory)
         {
 
             SqlCommand sqlCommand = new SqlCommand(
@@ -224,6 +288,7 @@ on c.ClientType = ct.id
                    $",MidleName," +
                    $"LastName," +
                    $"ClientType," +
+                   $"Documents," +
                    $"GoodHistory)  " +
                    $"Values(" +
                    $"@res," +
@@ -231,6 +296,7 @@ on c.ClientType = ct.id
                    $"N'{MidleName}'," +
                    $"N'{LastName}'," +
                    $"0," +
+                   $"N'{Documents}',"+
                    $"'{ GoodHistory}')", con);
             con.Open();
             if (sqlCommand.ExecuteNonQuery() > 0)
@@ -240,10 +306,11 @@ on c.ClientType = ct.id
                 newLogMessage?.Invoke($"Добавлен пользоваетль клиент : " +
                    $"{FirstName}," +
                    $",MidleName : " +
-                   $"N'{MidleName}'," +
+                   $"{MidleName}'," +
                    $"LastName : " +
-                   $"N'{LastName}'," +
-
+                   $"{LastName}', " +
+                   $"Documents : " +
+                   $"{Documents}'," +
                    $"GoodHistory :  " +
                    $"'{ GoodHistory}')");
             }
@@ -251,7 +318,7 @@ on c.ClientType = ct.id
 
         }
 
-        public void AddOrganisation( string OrganisationName,  bool GoodHistory)
+        public void AddOrganisation( string OrganisationName, string BankDetails, string Adress,  bool GoodHistory)
         {
 
             SqlCommand sqlCommand = new SqlCommand(
@@ -262,27 +329,35 @@ on c.ClientType = ct.id
                     $"id," +
                    $"OrganisationName," +
                    $"ClientType," +
+                   $"BankDetails," +
+                   $"Adress," +
                    $"GoodHistory)  " +
                    $"Values(" +
                    $"@res," +
                    $"N'{OrganisationName}'," +
                    $"1," +
+                   $"N'{BankDetails}'," +
+                   $"N'{Adress}'," +
                    $"'{ GoodHistory}')", con);
             con.Open();
             if (sqlCommand.ExecuteNonQuery() > 0)
             {
-                dt_clients.Clear();
-                da_clients.Fill(dt_clients);
-                newLogMessage?.Invoke($"Добавлена Организация : " +
+                dt_Organisations.Clear();
+                da_organisations.Fill(dt_Organisations);
+                newLogMessage?.Invoke($"" +
+                    $"Добавлена Организация : " +
                    $"{OrganisationName}," +
-
+                    $"BankDetails : " +
+                   $"{BankDetails}," + 
+                   $"Adress : " +
+                   $"{Adress}," +
                    $"GoodHistory :  " +
                    $"'{ GoodHistory}')");
             }
             con.Close();
 
         }
-        public void AddAccaunt(DataRow row)
+        public void AddAccaunt(DataRow row, int ClientType)
         {
             dt_Accaunts.Rows.Add(row);
             newLogMessage?.Invoke(
@@ -298,6 +373,15 @@ on c.ClientType = ct.id
                    $"");
             da_accaunts.Update(dt_Accaunts);
             ReFilldtAcc();
+            if (ClientType == 0)
+            {
+
+                ReFilldtClients();
+            }
+            else
+            {
+                ReFilldtOrgs();
+            }
         }
 
 
@@ -326,7 +410,7 @@ on c.ClientType = ct.id
         }
 
 
-        public void DeleteAcc(DataRowView row)
+        public void DeleteAcc(DataRowView row, int CLientType)
         {
             if (float.Parse(row["Balans"].ToString()) > 0)
             {
@@ -339,7 +423,15 @@ on c.ClientType = ct.id
                 newLogMessage?.Invoke($"Уданение счета id: {row["id"]}  для клиента {row["OwnerId"]} ");
                 row.Row.Delete();
                 da_accaunts.Update(dt_Accaunts);
+                if (CLientType == 0)
+                {
+
                 ReFilldtClients();
+                }
+                else
+                {
+                    ReFilldtOrgs();
+                }
             }
         }
 

@@ -5,64 +5,28 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:convert="clr-namespace:DreamConvertions"
         mc:Ignorable="d"
-        Title="NewClient" Height="400" Width="800" Closing="Window_Closing">
-    <Grid Margin="10">
+        Title="NewClient" Height="240" Width="300" Closing="Window_Closing">
+
+
+
+
+    <Grid Grid.Row="0" Grid.Column="1" Margin="10">
         <Grid.Resources>
             <convert:ConvertcbTextToHidden x:Key="Convert_cbTextToHidden"></convert:ConvertcbTextToHidden>
             <convert:ConverSelectedItemsToBool x:Key="Convert_SelectedItemsToBool"></convert:ConverSelectedItemsToBool>
         </Grid.Resources>
-
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"></ColumnDefinition>
-            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="100*"></ColumnDefinition>
+            <ColumnDefinition Width="100*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <DataGrid x:Name="dtg_Clients"            
-            Grid.Column="0"
-            AutoGenerateColumns="False"
-            ItemsSource="{Binding}"
-            VerticalGridLinesBrush="LightGray"
-            HorizontalGridLinesBrush="LightGray"
-            RowBackground="GhostWhite"
-            AlternatingRowBackground="Snow"
-            IsReadOnly="True"
-                  >
-            <DataGrid.Columns>
-
-                <DataGridTextColumn     Header="id"
-                    Binding="{Binding id}"
-                    IsReadOnly="True"
-                    x:Name="Id"/>
-                <DataGridTextColumn Header="FullName"
-                    x:Name="FullName"
-                    IsReadOnly="True"
-                    Binding="{Binding FullName}" />
-                <DataGridTextColumn Header="ClientType"
-                    IsReadOnly="True"
-                    Binding="{Binding ClientType}" 
-                    x:Name="History"/>
-                <DataGridCheckBoxColumn Header="History"
-                    IsReadOnly="True"
-                    Binding="{Binding GoodHistory}" />
-                <DataGridTextColumn Header="accs"
-                    IsReadOnly="True"
-                    Binding="{Binding accs}" />
-            </DataGrid.Columns>
-        </DataGrid>
-        <Grid Grid.Row="0" Grid.Column="1" Margin="10,0,0,10">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="30"></RowDefinition>
-                <RowDefinition Height="30"></RowDefinition>
-                <RowDefinition Height="30"></RowDefinition>
-                <RowDefinition Height="30"></RowDefinition>
-                <RowDefinition Height="30"></RowDefinition>
-                <RowDefinition Height="30"></RowDefinition>
-                <RowDefinition Height="30"></RowDefinition>
-                <RowDefinition Height="30"></RowDefinition>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"></ColumnDefinition>
-                <ColumnDefinition Width="Auto"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
 
         <TextBlock Text="First Name" 
             Grid.Row="0" Grid.Column="0" 
@@ -107,41 +71,29 @@
                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
                  TextWrapping="Wrap" Text=""
             Visibility="Visible"/>
+        <TextBlock Text="Documents" 
+                   Margin="2" Padding="2"       
+                   Grid.Row="3" Grid.Column="0" 
+                   HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                   TextWrapping="Wrap" 
+             Visibility="Visible"/>
+        <TextBox x:Name="tbx_Documents" 
+                   Margin="2" Padding="2"       
+                 Grid.Row="3" Grid.Column="1"
+                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                 TextWrapping="Wrap" Text=""
+            Visibility="Visible"/>
         <CheckBox x:Name="cb_GoodHistory" 
-                  Grid.Row="3" Grid.Column="1"
+                  Grid.Row="4" Grid.Column="1"
                   Margin="5"  
                   Content="Good History"></CheckBox>
         <Button Content="Добавить Клиента" 
-                Grid.Row="4" Grid.Column="1"
+                Grid.Row="5" Grid.Column="1"
                 Padding="2"
                 HorizontalAlignment="Stretch"  
                 VerticalAlignment="Bottom" 
                 Click="Button_Click" 
             Visibility="Visible"
         />
-        <TextBlock Text="Organisation Name" 
-            Grid.Row="6" 
-            Grid.Column="0" 
-            HorizontalAlignment="Stretch" 
-                   Margin="2" Padding="2"
-            TextWrapping="Wrap" 
-            Visibility="Visible"/>
-        <TextBox x:Name="tbx_OrganistionName" 
-                 Grid.Row="6" Grid.Column="1" 
-                 HorizontalAlignment="Stretch" 
-                 TextWrapping="Wrap" 
-                 Text="" 
-                 VerticalAlignment="Stretch"
-                 Margin="2" Padding="2"
-             Visibility="Visible"/>
-        <Button Content="Добавить Организацию" 
-                Grid.Row="7" Grid.Column="1"
-                Padding="2"
-                HorizontalAlignment="Stretch"  
-                VerticalAlignment="Bottom" 
-                Click="Button_AddOrganisationClick"
-            Visibility="Visible"
-        />
-        </Grid>
     </Grid>
 </Window>

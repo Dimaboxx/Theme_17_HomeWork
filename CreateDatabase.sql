@@ -1,5 +1,15 @@
 ﻿use MSSQLLocalDemo
 
+--DROP TABLE IF EXISTS [dbo].[Accaunts]
+--drop TABLE IF EXISTS [dbo].[ClientType]
+--drop TABLE IF EXISTS [dbo].[Clients]
+--drop TABLE IF EXISTS [dbo].[Organisations]
+--drop TABLE IF EXISTS [dbo].[AccauntType]
+--drop TABLE IF EXISTS [dbo].[ratesType]
+--drop PROCEDURE IF EXISTS NextClientId
+--drop PROCEDURE IF EXISTS NextAccauntId
+
+
 CREATE TABLE [dbo].[ClientType] (
     [id]          INT           IDENTITY (0, 1) NOT NULL,
     [Description] NVARCHAR (20) NOT NULL,
@@ -14,7 +24,9 @@ CREATE TABLE [dbo].[Clients] (
     [ClientType]       INT            DEFAULT ((0)) NOT NULL,
     [FullName]         AS             ([FirstName]+' '+[MidleName]+' '+[LastName] ),
     [GoodHistory]      BIT            DEFAULT ((0)) not NULL,
+    [Documents]        NVARCHAR (50)  not NULL,
     CONSTRAINT [PK_Clients_Id] PRIMARY KEY CLUSTERED ([id] ASC),
+    CONSTRAINT AK_UnicClient UNIQUE (FullName, Documents)
 );
 
 CREATE TABLE [dbo].[Organisations] (
@@ -22,7 +34,10 @@ CREATE TABLE [dbo].[Organisations] (
     [ClientType]       INT            DEFAULT ((1)) NOT NULL,
     [OrganisationName] NVARCHAR (100) not null,
     [GoodHistory]      BIT            DEFAULT ((0)) not NULL,
+    [BankDetails]      NVARCHAR (100) not null,
+    [Adress]           NVARCHAR (100) not null,
     CONSTRAINT [PK_Organisation_Id] PRIMARY KEY CLUSTERED ([id] ASC),
+    CONSTRAINT AK_UnicOrganisation UNIQUE (OrganisationName, BankDetails)
 );
 
 ----go
@@ -106,7 +121,18 @@ set @nclient =  ( select count(*) from Clients )+1
 exec @id = NextClientId 
 
 select @id
-insert into [dbo].[Clients] (id,FirstName,MidleName,LastName)  Values(@id,N'fn'+str(@nclient),'mn'+str(@nclient),'ln'+str(@nclient));
+insert into [dbo].[Clients] 
+                            (id
+                            ,FirstName
+                            ,MidleName
+                            ,LastName
+                            ,Documents) 
+                    Values(@id
+                    ,N'fn'+str(@nclient),
+                    'mn'+str(@nclient),
+                    'ln'+str(@nclient),
+                    'Doc'+str(@nclient)
+                    );
 exec @accid = NextAccauntId
 insert into [dbo].Accaunts(id,
                            OpenDate,
@@ -129,7 +155,7 @@ insert into [dbo].Accaunts(id,
            )
 exec @id = NextClientId
 set @norgs =  ( select count(*) from Organisations )+1
-insert into [dbo].Organisations(Id,OrganisationName)  Values(@id,N'Orgn'+str(@norgs));
+insert into [dbo].Organisations(Id,OrganisationName,[BankDetails],Adress)  Values(@id,N'Orgn'+str(@norgs),'Req '+str(@norgs), 'Adr '+str(@norgs));
 exec @accid = NextAccauntId
 insert into [dbo].Accaunts(id,
                            OpenDate,
@@ -196,3 +222,60 @@ select
     select 
         id, OrganisationName as'FullName',ClientType
     from Organisations) as c on a.OwnerId = c.id
+
+
+    select
+       a.id,
+       act.Description as 'TypeDesc',
+       rt.Description as 'RatesType',
+       c.FullName as 'Owner',
+       a.Balans,
+       a.OpenDate,
+       a.EndDate,
+       a.rates,
+       a.OwnerId,
+       a.ratesTypeid,
+       a.Capitalisation,
+       a.TypeId
+        
+    from
+    [Accaunts] as a 
+    left join AccauntType as act on a.[TypeId] = act.id  
+    left join ratesType as rt on a.[ratesTypeid] = rt.id
+    RIGHT JOIN (select 
+        id,FullName as 'FullName',ClientType
+    from [Clients] 
+    --union 
+    --select 
+    --    id, OrganisationName as'FullName',ClientType
+    --from Organisations
+    ) as c on a.OwnerId = c.id
+     
+
+         select
+       a.id,
+       act.Description as 'TypeDesc',
+       rt.Description as 'RatesType',
+       c.FullName as 'Owner',
+       a.Balans,
+       a.OpenDate,
+       a.EndDate,
+       a.rates,
+       a.OwnerId,
+       a.ratesTypeid,
+       a.Capitalisation,
+       a.TypeId
+        
+    from
+    [Accaunts] as a 
+    left join AccauntType as act on a.[TypeId] = act.id  
+    left join ratesType as rt on a.[ratesTypeid] = rt.id
+    RIGHT JOIN (
+    --select 
+    --    id,FullName as 'FullName',ClientType
+    --from [Clients] 
+    --union 
+    select 
+        id, OrganisationName as'FullName',ClientType
+    from Organisations
+    ) as c on a.OwnerId = c.id

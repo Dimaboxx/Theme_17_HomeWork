@@ -34,21 +34,13 @@ namespace Theme_17_HomeWork
         //    }
         //}
 
-        public DataTable dt_Clients
-        {
-            get { return null; }
-            set
-            {
-                dtg_Clients.DataContext = value.DefaultView;
-            }
-        }
 
 
 
 
 
-        public event Action<string, string, string, bool> newClientEvent;
-        public event Action<string,  bool> newOrganisationEvent;
+
+        public event Action<string, string, string, string, bool> newClientEvent;
         public NewClient()
         {
 
@@ -59,12 +51,13 @@ namespace Theme_17_HomeWork
         {
             this.DialogResult = true;
             //SqlCommand c = new SqlCommand();
-         if (!String.IsNullOrWhiteSpace(tbx_FirstName.Text) && !String.IsNullOrWhiteSpace(tbx_LastName.Text))
+         if (!String.IsNullOrWhiteSpace(tbx_FirstName.Text) && !String.IsNullOrWhiteSpace(tbx_LastName.Text)&& !String.IsNullOrWhiteSpace(tbx_Documents.Text))
             {
                 newClientEvent?.Invoke(
                     tbx_FirstName.Text,
                     tbx_MidleName.Text,
                     tbx_LastName.Text,
+                    tbx_Documents.Text,
                     (bool)(cb_GoodHistory.IsChecked));
                     this.Close();
             }
@@ -86,18 +79,7 @@ namespace Theme_17_HomeWork
 
 
 
-        private void Button_AddOrganisationClick(object sender, RoutedEventArgs e)
-        {
-            if (!String.IsNullOrWhiteSpace(tbx_OrganistionName.Text))
-            {
-                newOrganisationEvent?.Invoke(
-                    tbx_OrganistionName.Text,
-                    (bool)(cb_GoodHistory.IsChecked));
-                    this.Close();
-            }
-            else
-                MessageBox.Show("Имя организации не может быть пустым!", "Обнаружено пустое поле", MessageBoxButton.OK, MessageBoxImage.Error);
-        }
+
     }
 
 
