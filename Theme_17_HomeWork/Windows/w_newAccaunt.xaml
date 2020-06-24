@@ -16,11 +16,12 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="0" Margin="5">
-            <TextBlock Text="Клиент"></TextBlock>
+            <TextBlock Text="Клиент" Visibility="Collapsed"></TextBlock>
             <ComboBox x:Name="cbbx_Owner"
                       Margin="2" Padding="2"
                       ItemsSource="{Binding}"
-                      DisplayMemberPath="FullName"></ComboBox>
+                      DisplayMemberPath="FullName"
+                      Visibility="Collapsed"></ComboBox>
             <TextBlock Text="Тип счета"></TextBlock>
             <ComboBox x:Name="cbbx_acctype"
                       Margin="2" Padding="2"
@@ -44,7 +45,7 @@
             <Button x:Name="btn_openAcc" Content="открыть" 
                     Margin="0,5" 
                     Click="btn_openAcc_Click"
-                    IsEnabled="{Binding ElementName=cbbx_Owner, Path=SelectedItem, Converter={StaticResource ItemToBool}}"
+                    IsEnabled="{Binding ElementName=cbbx_acctype, Path=SelectedItem, Converter={StaticResource ItemToBool}}"
                     ></Button>
             <Line></Line>
         </StackPanel>

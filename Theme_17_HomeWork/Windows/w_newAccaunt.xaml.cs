@@ -46,18 +46,18 @@ namespace Theme_17_HomeWork
 
             }
         }
-        public DataTable Clients
-        {
-            get
-            {
-                return null;
-            }
-            set
-            {
-                cbbx_Owner.DataContext = value;
+        //public DataTable Clients
+        //{
+        //    get
+        //    {
+        //        return null;
+        //    }
+        //    set
+        //    {
+        //        cbbx_Owner.DataContext = value;
 
-            }
-        }
+        //    }
+        //}
 
 
         public DataRow NewACCrow { get; set; }
@@ -91,7 +91,7 @@ namespace Theme_17_HomeWork
                 }
                 else
                 {
-                    NewACCrow["OwnerId"] = (int)((DataRowView)cbbx_Owner.SelectedItem)["id"];
+                    //NewACCrow["OwnerId"] = (int)((DataRowView)cbbx_Owner.SelectedItem)["id"];
                     NewACCrow["TypeId"] = (int)((DataRowView)cbbx_acctype.SelectedItem)["id"];
                     NewACCrow["OpenDate"] = DateTime.Now;
                     NewACCrow["EndDate"] = (DateTime)dp_enddate.SelectedDate;
